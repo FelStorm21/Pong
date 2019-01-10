@@ -18,9 +18,12 @@ import javax.swing.SwingUtilities;
 public class Gui {
 	
 	private JFrame frame;
-	private JPanel gamePanel;
+	private GamePanel gamePanel;
 	private JLabel title, readyToPlay, pauseLabel, pauseInfo;
 	private PropertyChangeSupport pcs;
+	
+	public static final int screenWidth = (int) Toolkit.getDefaultToolkit().getScreenSize().getWidth();
+	public static final int screenHeight = (int) Toolkit.getDefaultToolkit().getScreenSize().getHeight();
 	
 	public Gui() {
 		SwingUtilities.invokeLater(this::initGui);
@@ -29,21 +32,23 @@ public class Gui {
 	public void initGui() {
 		frame = new JFrame("Pong");
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		frame.setSize((int) Toolkit.getDefaultToolkit().getScreenSize().getWidth() / 2, (int) Toolkit.getDefaultToolkit().getScreenSize().getHeight() / 2); 
+		frame.setSize(screenWidth / 2, screenHeight / 2); 
 		frame.setLocationRelativeTo(null);
 		
-		gamePanel = new JPanel();
+		gamePanel = new GamePanel();
 		gamePanel.setBackground(Color.black);
 		gamePanel.setLayout(new BorderLayout());
-		gamePanel.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(Color.black, 2), BorderFactory.createLineBorder(Color.white, 7)));
+		gamePanel.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(Color.black, 3), BorderFactory.createLineBorder(Color.white, 7)));
 		
 		readyToPlay = new JLabel("Press space bar to play");
+		readyToPlay.setName("readyToPlay");
 		readyToPlay.setForeground(Color.white);
 		readyToPlay.setFont(new Font("Monospaced", Font.PLAIN, 18));
 		readyToPlay.setHorizontalAlignment(JLabel.CENTER);
 		gamePanel.add(readyToPlay, BorderLayout.SOUTH);
 		
 		title = new JLabel("WELCOME TO PONG!");
+		title.setName("title");
 		title.setForeground(Color.white);
 		title.setFont(new Font("Monospaced", Font.PLAIN, 36));
 		title.setHorizontalAlignment(JLabel.CENTER);
@@ -56,7 +61,7 @@ public class Gui {
 		
 		pauseInfo = new JLabel("Press space bar to pause");
 		pauseInfo.setForeground(Color.white);
-		pauseInfo.setFont(new Font("Monospaced", Font.PLAIN, 18));
+		pauseInfo.setFont(new Font("Monospaced", Font.PLAIN, 16));
 		pauseInfo.setHorizontalAlignment(JLabel.CENTER);
 		
 		frame.add(gamePanel);
@@ -85,13 +90,13 @@ public class Gui {
 		});
 		
 		pcs.addPropertyChangeListener("beginPause", (evt) -> {
-			System.out.println("BEGIN PAUSE listener code reached");
 			pauseLabel.setVisible(true);
+//			gamePanel.repaint();
 		});
 		
 		pcs.addPropertyChangeListener("endPause", (evt) -> {
-			System.out.println("END PAUSE listener code reached");
 			pauseLabel.setVisible(false);
+//			gamePanel.repaint();
 		});
 	}
 	

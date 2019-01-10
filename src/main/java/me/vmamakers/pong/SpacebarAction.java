@@ -19,18 +19,17 @@ public class SpacebarAction extends AbstractAction 	{
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		counter++;
-		System.out.println("COUNTER = " + counter);
 		if (counter == 10) {
 			counter = 2;
 		}
 		if (counter == 1) {
-			System.out.println("game started");
+//			System.out.println("game started");
 			pcs.firePropertyChange("startGame", false, true);
 		} else if (counter % 2 == 0){
-			System.out.println("pause begun");
+//			System.out.println("pause begun");
 			pcs.firePropertyChange("beginPause", false, true);
 		} else {
-			System.out.println("pause ended");
+//			System.out.println("pause ended");
 			pcs.firePropertyChange("endPause", false, true);
 		}
 	}
