@@ -4,12 +4,10 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Toolkit;
-import java.beans.PropertyChangeSupport;
 
 import javax.swing.BorderFactory;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
-import javax.swing.JPanel;
 import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
 
@@ -20,7 +18,6 @@ public class Gui {
 	private JFrame frame;
 	private GamePanel gamePanel;
 	private JLabel title, readyToPlay, pauseLabel, pauseInfo;
-	private PropertyChangeSupport pcs;
 	
 	public static final int screenWidth = (int) Toolkit.getDefaultToolkit().getScreenSize().getWidth();
 	public static final int screenHeight = (int) Toolkit.getDefaultToolkit().getScreenSize().getHeight();
@@ -71,33 +68,62 @@ public class Gui {
 	
 	public void prepareAndShow() {
 		frame.setVisible(true);
+		gamePanel.initGameComponents();
 	}
 	
 	public void setupListeners() {
+		// THIS IS WEIRD IF YOU HOLD DOWN THE SPACE BAR
 		SpacebarAction spacePressed = new SpacebarAction();
-		pcs = spacePressed.getPcs();
 		gamePanel.getInputMap().put(KeyStroke.getKeyStroke("SPACE"), "space bar pressed");
 		gamePanel.getActionMap().put("space bar pressed", spacePressed);
+		spacePressed.addPropertyChangeListener((evt) -> {
+			switch (evt.getPropertyName()) {
+				case "startGame":
+					gamePanel.remove(title);
+					gamePanel.remove(readyToPlay);
+					gamePanel.add(pauseLabel, BorderLayout.CENTER);
+					gamePanel.add(pauseInfo, BorderLayout.NORTH);
+					pauseLabel.setVisible(false);
+					pauseInfo.setVisible(true);
+					gamePanel.repaint();
+					break;
+				case "beginPause":
+					pauseLabel.setVisible(true);
+//					gamePanel.repaint();
+					break;
+				case "endPause":
+					pauseLabel.setVisible(false);
+//					gamePanel.repaint();
+					break;
+				default:
+					System.out.println("ERROR IN PROPERTY NAME");
+			}
+		}); 
 		
-		pcs.addPropertyChangeListener("startGame", (evt) -> {
-			gamePanel.remove(title);
-			gamePanel.remove(readyToPlay);
-			gamePanel.add(pauseLabel, BorderLayout.CENTER);
-			gamePanel.add(pauseInfo, BorderLayout.NORTH);
-			pauseLabel.setVisible(false);
-			pauseInfo.setVisible(true);
-			gamePanel.repaint();
-		});
+		// THESE ARE STILL ACCESSIBLE WHEN PAUSED
+		String[] arrowKeys = {"UP", "DOWN"};
+		ArrowAction[] arrowActions = new ArrowAction[arrowKeys.length];
+		for (int i = 0; i < arrowKeys.length; i++) {
+			arrowActions[i] = new ArrowAction(arrowKeys[i]);
+			gamePanel.getInputMap().put(KeyStroke.getKeyStroke(arrowKeys[i]), arrowKeys[i].toLowerCase() + " arrow");
+			gamePanel.getActionMap().put(arrowKeys[i].toLowerCase() + " arrow", arrowActions[i]);
+			
+			arrowActions[i].addPropertyChangeListener((evt) -> {
+				switch (evt.getPropertyName()) {
+				case "UP":
+					gamePanel.getLeftP().move(10);
+					gamePanel.repaint();
+					break;
+				case "DOWN":
+					gamePanel.getLeftP().move(-10);
+					gamePanel.repaint();
+					break;
+				default:
+					System.out.println("ERROR");
+				}
+			});
+		}
 		
-		pcs.addPropertyChangeListener("beginPause", (evt) -> {
-			pauseLabel.setVisible(true);
-//			gamePanel.repaint();
-		});
-		
-		pcs.addPropertyChangeListener("endPause", (evt) -> {
-			pauseLabel.setVisible(false);
-//			gamePanel.repaint();
-		});
 	}
 	
 }
