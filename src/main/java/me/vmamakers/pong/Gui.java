@@ -4,6 +4,9 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Toolkit;
+import java.awt.event.KeyEvent;
+import java.util.Arrays;
+import java.util.stream.Collectors;
 
 import javax.swing.BorderFactory;
 import javax.swing.JFrame;
@@ -101,28 +104,93 @@ public class Gui {
 		}); 
 		
 		// THESE ARE STILL ACCESSIBLE WHEN PAUSED
-		String[] arrowKeys = {"UP", "DOWN"};
-		ArrowAction[] arrowActions = new ArrowAction[arrowKeys.length];
+//		String[] arrowKeys = {"UP", "DOWN"};
+		int[] arrowKeys = {KeyEvent.VK_UP, KeyEvent.VK_DOWN};
+		String[] arrowKeysNames = new String[arrowKeys.length];
+		arrowKeysNames = Arrays.stream(arrowKeys).mapToObj(KeyEvent::getKeyText).map(String::toUpperCase).toArray(String[]::new);
+		ArrowAction[] arrowActions = new ArrowAction[2 * arrowKeys.length];
+		
 		for (int i = 0; i < arrowKeys.length; i++) {
-			arrowActions[i] = new ArrowAction(arrowKeys[i]);
-			gamePanel.getInputMap().put(KeyStroke.getKeyStroke(arrowKeys[i]), arrowKeys[i].toLowerCase() + " arrow");
-			gamePanel.getActionMap().put(arrowKeys[i].toLowerCase() + " arrow", arrowActions[i]);
+			arrowActions[i] = new ArrowAction(arrowKeysNames[i], false);
+			gamePanel.getInputMap().put(KeyStroke.getKeyStroke(arrowKeys[i], 0, false), arrowKeysNames[i] + " arrow pressed");
+			gamePanel.getActionMap().put(arrowKeysNames[i] + " arrow pressed", arrowActions[i]);
 			
-			arrowActions[i].addPropertyChangeListener((evt) -> {
-				switch (evt.getPropertyName()) {
-				case "UP":
-					gamePanel.getLeftP().move(10);
-					gamePanel.repaint();
-					break;
-				case "DOWN":
-					gamePanel.getLeftP().move(-10);
-					gamePanel.repaint();
-					break;
-				default:
-					System.out.println("ERROR");
-				}
-			});
+			arrowActions[i + arrowKeys.length] = new ArrowAction(arrowKeysNames[i], true);
+			gamePanel.getInputMap().put(KeyStroke.getKeyStroke(arrowKeys[i], 0, true), arrowKeysNames[i] + " arrow released");
+			gamePanel.getActionMap().put(arrowKeysNames[i] + " arrow released", arrowActions[i + arrowKeys.length]);
 		}
+		
+		arrowActions[2].addPropertyChangeListener((evt) -> {  // up release listener
+			System.out.println("up release listener works");
+			arrowActions[0].setBlocking(false);
+//			switch (evt.getPropertyName()) {
+//				case "UP":
+//					gamePanel.getLeftPaddle().move(5);
+//					gamePanel.repaint();
+//					break;
+//				case "DOWN":
+//					gamePanel.getLeftPaddle().move(-5);
+//					gamePanel.repaint();
+//					break;
+//				default:
+//					System.out.println("ERROR");
+//			}
+		});
+		
+		arrowActions[3].addPropertyChangeListener((evt) -> {  // down release listener
+			System.out.println("down release listener works");
+			arrowActions[1].setBlocking(false);
+//			switch (evt.getPropertyName()) {
+//				case "UP":
+//					gamePanel.getLeftPaddle().move(5);
+//					gamePanel.repaint();
+//					break;
+//				case "DOWN":
+//					gamePanel.getLeftPaddle().move(-5);
+//					gamePanel.repaint();
+//					break;
+//				default:
+//					System.out.println("ERROR");
+//			}
+		});
+		
+		arrowActions[0].addPropertyChangeListener((evt) -> {  // up pressed listener
+			System.out.println("up pressed listener works");
+			while (arrowActions[0].isBlocking()) {   // MULTI THREADING TO FIX WHILE BLOCKING ISSUE????
+//				switch (evt.getPropertyName()) {
+//					case "UP":
+//						gamePanel.getLeftPaddle().move(5);
+//						gamePanel.repaint();
+//						break;
+//					case "DOWN":
+//						gamePanel.getLeftPaddle().move(-5);
+//						gamePanel.repaint();
+//						break;
+//					default:
+//						System.out.println("ERROR");
+//				}
+				System.out.println("moving up");
+			}		
+		});
+		
+		arrowActions[1].addPropertyChangeListener((evt) -> {  // down pressed listener
+			System.out.println("down pressed listener works");
+			while (!arrowActions[1].isBlocking()) {
+//				switch (evt.getPropertyName()) {
+//					case "UP":
+//						gamePanel.getLeftPaddle().move(5);
+//						gamePanel.repaint();
+//						break;
+//					case "DOWN":
+//						gamePanel.getLeftPaddle().move(-5);
+//						gamePanel.repaint();
+//						break;
+//					default:
+//						System.out.println("ERROR");
+//				}
+				System.out.println("moving down");
+			}		
+		});
 		
 	}
 	

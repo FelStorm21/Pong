@@ -4,7 +4,7 @@ import java.awt.event.ActionEvent;
 
 import javax.swing.AbstractAction;	
 
-public class SpacebarAction extends AbstractAction 	{
+public class SpacebarAction extends AbstractAction {
 
 	private static final long serialVersionUID = 3315319539456505190L;
 	

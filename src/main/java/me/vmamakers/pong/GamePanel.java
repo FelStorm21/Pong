@@ -17,13 +17,13 @@ public class GamePanel extends JPanel {
 	private static final long serialVersionUID = -3185492084353029707L;
 	private boolean isOnStart = true;
 	
-	@Getter private Paddle leftP, rightP;
+	@Getter private Paddle leftPaddle, rightPaddle;
 	@Getter private Ball ball;
 	private int borderThickness;
 	
 	public void initGameComponents() {
-		leftP = new Paddle(this.getHeight() / 2);
-		rightP = new Paddle(this.getHeight() / 2);
+		leftPaddle = new Paddle(this.getHeight() / 2);
+		rightPaddle = new Paddle(this.getHeight() / 2);
 		ball = new Ball(this.getWidth() / 2, this.getHeight() / 2);
 		
 		borderThickness = getOffsetBorderThickness(5);
@@ -37,8 +37,8 @@ public class GamePanel extends JPanel {
 		}
 		if (!isOnStart) {
 			g.setColor(Color.white);
-			g.fillRect(borderThickness, leftP.getTransformedY(), leftP.getWidth(), leftP.getHeight());
-			g.fillRect(this.getWidth() - borderThickness - rightP.getWidth(), rightP.getTransformedY(), rightP.getWidth(), rightP.getHeight());
+			g.fillRect(borderThickness, leftPaddle.getTransformedY(), leftPaddle.getWidth(), leftPaddle.getHeight());
+			g.fillRect(this.getWidth() - borderThickness - rightPaddle.getWidth(), rightPaddle.getTransformedY(), rightPaddle.getWidth(), rightPaddle.getHeight());
 			g.fillRect(ball.getTransformedX(), ball.getTransformedY(), 2 * ball.getRadius(), 2 * ball.getRadius());
 //			g.setColor(Color.black);
 		}
