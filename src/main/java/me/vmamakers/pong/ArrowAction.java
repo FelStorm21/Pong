@@ -28,18 +28,18 @@ public class ArrowAction extends AbstractAction {
 			firePropertyChange(id, false, true);
 			
 			switch (id) {
-			case "DOWN":
-				System.out.println("down pressed");
-				break;
-			case "UP":
-				System.out.println("up pressed");
-				break;
-			case "LEFT":
-				System.out.println("left pressed");
-				break;
-			case "RIGHT":
-				System.out.println("right pressed");
-				break;
+				case "DOWN":
+					System.out.println("down pressed");
+					break;
+				case "UP":
+					System.out.println("up pressed");
+					break;
+				case "LEFT":
+					System.out.println("left pressed");
+					break;
+				case "RIGHT":
+					System.out.println("right pressed");
+					break;
 			}
 		} else if (onRelease) {  // key released code
 			firePropertyChange(id, false, true);

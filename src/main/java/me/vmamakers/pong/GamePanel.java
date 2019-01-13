@@ -44,7 +44,7 @@ public class GamePanel extends JPanel {
 		}
 	}
 	
-	private int getOffsetBorderThickness(int offset) {
+	public int getOffsetBorderThickness(int offset) {
 		CompoundBorder border = (CompoundBorder) this.getBorder();
 		LineBorder insideBorder = (LineBorder) border.getInsideBorder();
 		LineBorder outsideBorder = (LineBorder) border.getOutsideBorder();

@@ -6,21 +6,23 @@ import java.awt.Font;
 import java.awt.Toolkit;
 import java.awt.event.KeyEvent;
 import java.util.Arrays;
-import java.util.stream.Collectors;
 
 import javax.swing.BorderFactory;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
+import javax.swing.Timer;
 
 // Potentially add fader to "Press space bar to play" JLabel
+// MAKE CLASS BLOCK UNTIL START SCREEN IS GONE
 
 public class Gui {
 	
 	private JFrame frame;
 	private GamePanel gamePanel;
 	private JLabel title, readyToPlay, pauseLabel, pauseInfo;
+	private FancyTimer timer;
 	
 	public static final int screenWidth = (int) Toolkit.getDefaultToolkit().getScreenSize().getWidth();
 	public static final int screenHeight = (int) Toolkit.getDefaultToolkit().getScreenSize().getHeight();
@@ -30,6 +32,16 @@ public class Gui {
 	}
 	
 	public void initGui() {
+		timer = new FancyTimer(5, (e) -> {
+			if (timer.getId().equals("UP") && gamePanel.getLeftPaddle().getTransformedY() > gamePanel.getOffsetBorderThickness(5)) {
+				gamePanel.getLeftPaddle().move(1);
+				gamePanel.repaint();
+			} else if (timer.getId().equals("DOWN") && gamePanel.getLeftPaddle().getTransformedY() < gamePanel.getHeight() - gamePanel.getOffsetBorderThickness(5) - gamePanel.getLeftPaddle().getHeight()) {
+				gamePanel.getLeftPaddle().move(-1);
+				gamePanel.repaint();
+			}
+		});
+		
 		frame = new JFrame("Pong");
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setSize(screenWidth / 2, screenHeight / 2); 
@@ -122,6 +134,7 @@ public class Gui {
 		
 		arrowActions[2].addPropertyChangeListener((evt) -> {  // up release listener
 			System.out.println("up release listener works");
+			timer.stop();
 			arrowActions[0].setBlocking(false);
 //			switch (evt.getPropertyName()) {
 //				case "UP":
@@ -139,6 +152,7 @@ public class Gui {
 		
 		arrowActions[3].addPropertyChangeListener((evt) -> {  // down release listener
 			System.out.println("down release listener works");
+			timer.stop();
 			arrowActions[1].setBlocking(false);
 //			switch (evt.getPropertyName()) {
 //				case "UP":
@@ -156,7 +170,9 @@ public class Gui {
 		
 		arrowActions[0].addPropertyChangeListener((evt) -> {  // up pressed listener
 			System.out.println("up pressed listener works");
-			while (arrowActions[0].isBlocking()) {   // MULTI THREADING TO FIX WHILE BLOCKING ISSUE????
+			timer.setId("UP");
+			timer.start();
+//			while (arrowActions[0].isBlocking()) {   // MULTI THREADING TO FIX WHILE BLOCKING ISSUE????
 //				switch (evt.getPropertyName()) {
 //					case "UP":
 //						gamePanel.getLeftPaddle().move(5);
@@ -169,13 +185,15 @@ public class Gui {
 //					default:
 //						System.out.println("ERROR");
 //				}
-				System.out.println("moving up");
-			}		
+//				System.out.println("moving up");
+//			}		
 		});
 		
 		arrowActions[1].addPropertyChangeListener((evt) -> {  // down pressed listener
 			System.out.println("down pressed listener works");
-			while (!arrowActions[1].isBlocking()) {
+			timer.setId("DOWN");
+			timer.start();
+//			while (!arrowActions[1].isBlocking()) {
 //				switch (evt.getPropertyName()) {
 //					case "UP":
 //						gamePanel.getLeftPaddle().move(5);
@@ -188,8 +206,8 @@ public class Gui {
 //					default:
 //						System.out.println("ERROR");
 //				}
-				System.out.println("moving down");
-			}		
+//				System.out.println("moving down");
+//			}		
 		});
 		
 	}
