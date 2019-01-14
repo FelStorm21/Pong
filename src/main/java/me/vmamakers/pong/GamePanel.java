@@ -2,9 +2,15 @@ package me.vmamakers.pong;
 
 import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.event.KeyEvent;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
 
+import javax.swing.AbstractAction;
+import javax.swing.Action;
 import javax.swing.JPanel;
+import javax.swing.KeyStroke;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.LineBorder;
 
@@ -41,6 +47,48 @@ public class GamePanel extends JPanel {
 			g.fillRect(this.getWidth() - borderThickness - rightPaddle.getWidth(), rightPaddle.getTransformedY(), rightPaddle.getWidth(), rightPaddle.getHeight());
 			g.fillRect(ball.getTransformedX(), ball.getTransformedY(), 2 * ball.getRadius(), 2 * ball.getRadius());
 //			g.setColor(Color.black);
+		}
+	}
+	
+//	public void bindPractice(KeyAction[] actions, Class<? extends KeyAction> clazz) {
+//		Constructor<? extends KeyAction> constructor = null;
+//		try {
+//			constructor = clazz.getConstructor(String.class, boolean.class);
+//		} catch (NoSuchMethodException | SecurityException e1) {
+//			e1.printStackTrace();
+//		}
+//		for (int i = 0; i < actions.length; i++) {
+//			try {
+//				actions[i] = constructor.newInstance("UP", false);
+//			} catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+//				e.printStackTrace();
+//			}
+//		}
+//		
+//	}
+	
+	@SuppressWarnings("unchecked")
+	public void bindActionsToKeys(int[] keyCodes, KeyAction[] actions, Class<? extends KeyAction> clazz) {
+		Constructor<? extends KeyAction> constructor = null;
+		try {
+			constructor = clazz.getConstructor(String.class, boolean.class);
+		} catch (NoSuchMethodException | SecurityException e) {
+			e.printStackTrace();
+		}
+		
+		String[] keyNames = Arrays.stream(keyCodes).mapToObj(KeyEvent::getKeyText).map(String::toUpperCase).toArray(String[]::new);
+		for (int i = 0; i < actions.length; i++) {
+			boolean stateBool = (i > actions.length / 2 - 1) ? true : false;   //previously i > 1
+			String stateStr = (i > actions.length / 2 - 1) ? "released" : "pressed";   //previously i > 1
+			int j = (i > actions.length / 2 - 1) ? i - keyCodes.length : i;  //previously ? i - 2
+			
+			try {
+				actions[i] = constructor.newInstance(keyNames[j], stateBool);
+			} catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+				e.printStackTrace();
+			}
+			getInputMap().put(KeyStroke.getKeyStroke(keyCodes[j], 0, stateBool), keyNames[j] + " arrow " + stateStr);  // JUST USE keyNames INSTEAD OF getKeyStroke
+			getActionMap().put(keyNames[j] + " arrow " + stateStr, actions[i]);
 		}
 	}
 	

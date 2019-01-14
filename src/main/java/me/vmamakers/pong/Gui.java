@@ -35,11 +35,12 @@ public class Gui {
 		timer = new FancyTimer(5, (e) -> {
 			if (timer.getId().equals("UP") && gamePanel.getLeftPaddle().getTransformedY() > gamePanel.getOffsetBorderThickness(5)) {
 				gamePanel.getLeftPaddle().move(1);
-				gamePanel.repaint();
+//				gamePanel.repaint();
 			} else if (timer.getId().equals("DOWN") && gamePanel.getLeftPaddle().getTransformedY() < gamePanel.getHeight() - gamePanel.getOffsetBorderThickness(5) - gamePanel.getLeftPaddle().getHeight()) {
 				gamePanel.getLeftPaddle().move(-1);
-				gamePanel.repaint();
-			}
+//				gamePanel.repaint();
+			} 
+			gamePanel.repaint();
 		});
 		
 		frame = new JFrame("Pong");
@@ -88,10 +89,39 @@ public class Gui {
 	
 	public void setupListeners() {
 		// THIS IS WEIRD IF YOU HOLD DOWN THE SPACE BAR
-		SpacebarAction spacePressed = new SpacebarAction();
-		gamePanel.getInputMap().put(KeyStroke.getKeyStroke("SPACE"), "space bar pressed");
-		gamePanel.getActionMap().put("space bar pressed", spacePressed);
-		spacePressed.addPropertyChangeListener((evt) -> {
+//		SpacebarAction spacePressed = new SpacebarAction();
+//		gamePanel.getInputMap().put(KeyStroke.getKeyStroke("SPACE"), "space bar pressed");
+//		gamePanel.getActionMap().put("space bar pressed", spacePressed);
+//		spacePressed.addPropertyChangeListener((evt) -> {
+//			switch (evt.getPropertyName()) {
+//				case "startGame":
+//					gamePanel.remove(title);
+//					gamePanel.remove(readyToPlay);
+//					gamePanel.add(pauseLabel, BorderLayout.CENTER);
+//					gamePanel.add(pauseInfo, BorderLayout.NORTH);
+//					pauseLabel.setVisible(false);
+//					pauseInfo.setVisible(true);
+//					gamePanel.repaint();
+//					break;
+//				case "beginPause":
+//					pauseLabel.setVisible(true);
+////					gamePanel.repaint();
+//					break;
+//				case "endPause":
+//					pauseLabel.setVisible(false);
+////					gamePanel.repaint();
+//					break;
+//				default:
+//					System.out.println("ERROR IN PROPERTY NAME");
+//			}
+//		}); 
+		
+		int[] spaceKeys = {KeyEvent.VK_SPACE};
+		SpacebarAction[] spaceActions = new SpacebarAction[2 * spaceKeys.length];
+		gamePanel.bindActionsToKeys(spaceKeys, spaceActions, SpacebarAction.class);
+		
+		spaceActions[0].addPropertyChangeListener((evt) -> {  // space pressed
+			System.out.println("space pressed listener works");
 			switch (evt.getPropertyName()) {
 				case "startGame":
 					gamePanel.remove(title);
@@ -104,110 +134,47 @@ public class Gui {
 					break;
 				case "beginPause":
 					pauseLabel.setVisible(true);
-//					gamePanel.repaint();
+	//				gamePanel.repaint();
 					break;
 				case "endPause":
 					pauseLabel.setVisible(false);
-//					gamePanel.repaint();
+	//				gamePanel.repaint();
 					break;
 				default:
 					System.out.println("ERROR IN PROPERTY NAME");
 			}
-		}); 
+		});
+		
+		spaceActions[1].addPropertyChangeListener((evt) -> {  // space released
+			System.out.println("space released listener works");
+			spaceActions[0].setBlocking(false);
+		});
 		
 		// THESE ARE STILL ACCESSIBLE WHEN PAUSED
 //		String[] arrowKeys = {"UP", "DOWN"};
 		int[] arrowKeys = {KeyEvent.VK_UP, KeyEvent.VK_DOWN};
-		String[] arrowKeysNames = new String[arrowKeys.length];
-		arrowKeysNames = Arrays.stream(arrowKeys).mapToObj(KeyEvent::getKeyText).map(String::toUpperCase).toArray(String[]::new);
 		ArrowAction[] arrowActions = new ArrowAction[2 * arrowKeys.length];
+		gamePanel.bindActionsToKeys(arrowKeys, arrowActions, ArrowAction.class);
 		
-		for (int i = 0; i < arrowKeys.length; i++) {
-			arrowActions[i] = new ArrowAction(arrowKeysNames[i], false);
-			gamePanel.getInputMap().put(KeyStroke.getKeyStroke(arrowKeys[i], 0, false), arrowKeysNames[i] + " arrow pressed");
-			gamePanel.getActionMap().put(arrowKeysNames[i] + " arrow pressed", arrowActions[i]);
-			
-			arrowActions[i + arrowKeys.length] = new ArrowAction(arrowKeysNames[i], true);
-			gamePanel.getInputMap().put(KeyStroke.getKeyStroke(arrowKeys[i], 0, true), arrowKeysNames[i] + " arrow released");
-			gamePanel.getActionMap().put(arrowKeysNames[i] + " arrow released", arrowActions[i + arrowKeys.length]);
+		for (int i = 0; i <= 1; i++) {
+			String id = (i == 0) ? "UP" : "DOWN";
+			arrowActions[i].addPropertyChangeListener((evt) -> {  // PRESSED LISTENERS
+				System.out.println(id.toLowerCase() + " pressed listener works");
+				timer.setId(id);
+				timer.start();	
+			});
 		}
 		
 		arrowActions[2].addPropertyChangeListener((evt) -> {  // up release listener
 			System.out.println("up release listener works");
 			timer.stop();
 			arrowActions[0].setBlocking(false);
-//			switch (evt.getPropertyName()) {
-//				case "UP":
-//					gamePanel.getLeftPaddle().move(5);
-//					gamePanel.repaint();
-//					break;
-//				case "DOWN":
-//					gamePanel.getLeftPaddle().move(-5);
-//					gamePanel.repaint();
-//					break;
-//				default:
-//					System.out.println("ERROR");
-//			}
 		});
 		
 		arrowActions[3].addPropertyChangeListener((evt) -> {  // down release listener
 			System.out.println("down release listener works");
 			timer.stop();
 			arrowActions[1].setBlocking(false);
-//			switch (evt.getPropertyName()) {
-//				case "UP":
-//					gamePanel.getLeftPaddle().move(5);
-//					gamePanel.repaint();
-//					break;
-//				case "DOWN":
-//					gamePanel.getLeftPaddle().move(-5);
-//					gamePanel.repaint();
-//					break;
-//				default:
-//					System.out.println("ERROR");
-//			}
-		});
-		
-		arrowActions[0].addPropertyChangeListener((evt) -> {  // up pressed listener
-			System.out.println("up pressed listener works");
-			timer.setId("UP");
-			timer.start();
-//			while (arrowActions[0].isBlocking()) {   // MULTI THREADING TO FIX WHILE BLOCKING ISSUE????
-//				switch (evt.getPropertyName()) {
-//					case "UP":
-//						gamePanel.getLeftPaddle().move(5);
-//						gamePanel.repaint();
-//						break;
-//					case "DOWN":
-//						gamePanel.getLeftPaddle().move(-5);
-//						gamePanel.repaint();
-//						break;
-//					default:
-//						System.out.println("ERROR");
-//				}
-//				System.out.println("moving up");
-//			}		
-		});
-		
-		arrowActions[1].addPropertyChangeListener((evt) -> {  // down pressed listener
-			System.out.println("down pressed listener works");
-			timer.setId("DOWN");
-			timer.start();
-//			while (!arrowActions[1].isBlocking()) {
-//				switch (evt.getPropertyName()) {
-//					case "UP":
-//						gamePanel.getLeftPaddle().move(5);
-//						gamePanel.repaint();
-//						break;
-//					case "DOWN":
-//						gamePanel.getLeftPaddle().move(-5);
-//						gamePanel.repaint();
-//						break;
-//					default:
-//						System.out.println("ERROR");
-//				}
-//				System.out.println("moving down");
-//			}		
 		});
 		
 	}
