@@ -67,7 +67,6 @@ public class GamePanel extends JPanel {
 //		
 //	}
 	
-	@SuppressWarnings("unchecked")
 	public void bindActionsToKeys(int[] keyCodes, KeyAction[] actions, Class<? extends KeyAction> clazz) {
 		Constructor<? extends KeyAction> constructor = null;
 		try {
@@ -87,8 +86,8 @@ public class GamePanel extends JPanel {
 			} catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
 				e.printStackTrace();
 			}
-			getInputMap().put(KeyStroke.getKeyStroke(keyCodes[j], 0, stateBool), keyNames[j] + " arrow " + stateStr);  // JUST USE keyNames INSTEAD OF getKeyStroke
-			getActionMap().put(keyNames[j] + " arrow " + stateStr, actions[i]);
+			getInputMap().put(KeyStroke.getKeyStroke(keyCodes[j], 0, stateBool), keyNames[j] + " key " + stateStr);  // JUST USE keyNames INSTEAD OF getKeyStroke
+			getActionMap().put(keyNames[j] + " key " + stateStr, actions[i]);
 		}
 	}
 	

@@ -21,7 +21,8 @@ public class KeyAction extends AbstractAction {
 	
 	public void printKeyEvent(String id, boolean onRelease) {
 		String pressedBool = onRelease ? "released" : "pressed";
-		System.out.println(id.toLowerCase() + " " + pressedBool);
+		String newLine = onRelease ? "\n" : "";
+		System.out.println(id.toLowerCase() + " " + pressedBool + newLine);
 	}
 
 }

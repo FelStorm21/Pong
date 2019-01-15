@@ -31,7 +31,6 @@ public class ArrowAction extends KeyAction {
 			firePropertyChange(id, false, true); 
 			super.printKeyEvent(id, onRelease);
 		}
-		
 	}
 	
 //	@Override

@@ -119,9 +119,17 @@ public class Gui {
 		int[] spaceKeys = {KeyEvent.VK_SPACE};
 		SpacebarAction[] spaceActions = new SpacebarAction[2 * spaceKeys.length];
 		gamePanel.bindActionsToKeys(spaceKeys, spaceActions, SpacebarAction.class);
+//		System.out.println(spaceActions[0].getId() + " " + spaceActions[0].isOnRelease() + ", " + spaceActions[1].getId() + " " + spaceActions[1].isOnRelease());
 		
 		spaceActions[0].addPropertyChangeListener((evt) -> {  // space pressed
 			System.out.println("space pressed listener works");
+//			if (evt.getPropertyName().equals("startGame")) {
+//				System.out.println("game started");
+//			} else if (evt.getPropertyName().equals("beginPause")) {
+//				System.out.println("pause started");
+//			} else if (evt.getPropertyName().equals("endPause")) {
+//				System.out.println("pause ended");
+//			}
 			switch (evt.getPropertyName()) {
 				case "startGame":
 					gamePanel.remove(title);
@@ -133,10 +141,12 @@ public class Gui {
 					gamePanel.repaint();
 					break;
 				case "beginPause":
+					System.out.println("begin pause");
 					pauseLabel.setVisible(true);
 	//				gamePanel.repaint();
 					break;
 				case "endPause":
+					System.out.println("end pause");
 					pauseLabel.setVisible(false);
 	//				gamePanel.repaint();
 					break;
@@ -147,6 +157,7 @@ public class Gui {
 		
 		spaceActions[1].addPropertyChangeListener((evt) -> {  // space released
 			System.out.println("space released listener works");
+			//if you switch pauseLabel.setVisible(true) to here, then the pause comes on as you hold space with the right prints
 			spaceActions[0].setBlocking(false);
 		});
 		
