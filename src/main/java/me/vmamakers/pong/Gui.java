@@ -33,13 +33,18 @@ public class Gui {
 	
 	public void initGui() {
 		timer = new FancyTimer(5, (e) -> {
-			if (timer.getId().equals("UP") && gamePanel.getLeftPaddle().getTransformedY() > gamePanel.getOffsetBorderThickness(5)) {
-				gamePanel.getLeftPaddle().move(1);
+			if (timer.getId().equals("UP") && gamePanel.getRightPaddle().getTransformedY() > gamePanel.getOffsetBorderThickness(5)) {
+				gamePanel.getRightPaddle().move(1);
 //				gamePanel.repaint();
-			} else if (timer.getId().equals("DOWN") && gamePanel.getLeftPaddle().getTransformedY() < gamePanel.getHeight() - gamePanel.getOffsetBorderThickness(5) - gamePanel.getLeftPaddle().getHeight()) {
+			} else if (timer.getId().equals("DOWN") && gamePanel.getRightPaddle().getTransformedY() < gamePanel.getHeight() - gamePanel.getOffsetBorderThickness(5) - gamePanel.getRightPaddle().getHeight()) {
+				gamePanel.getRightPaddle().move(-1);
+//				gamePanel.repaint();
+			} else if (timer.getId().equals("W") && gamePanel.getLeftPaddle().getTransformedY() > gamePanel.getOffsetBorderThickness(5)) {
+				gamePanel.getLeftPaddle().move(1);
+			} else if (timer.getId().equals("S") && gamePanel.getLeftPaddle().getTransformedY() < gamePanel.getHeight() - gamePanel.getOffsetBorderThickness(5) - gamePanel.getLeftPaddle().getHeight()) {
 				gamePanel.getLeftPaddle().move(-1);
 //				gamePanel.repaint();
-			} 
+			}
 			gamePanel.repaint();
 		});
 		
@@ -159,6 +164,33 @@ public class Gui {
 			System.out.println("space released listener works");
 			//if you switch pauseLabel.setVisible(true) to here, then the pause comes on as you hold space with the right prints
 			spaceActions[0].setBlocking(false);
+		});
+		
+		// START AWSD KEYS
+		
+		int[] wsKeys = {KeyEvent.VK_W, KeyEvent.VK_S};
+		ArrowAction[] wsActions = new ArrowAction[2 * wsKeys.length];
+		gamePanel.bindActionsToKeys(wsKeys, wsActions, ArrowAction.class);
+		
+		for (int i = 0; i <= 1; i++) {
+			String id = (i == 0) ? "W" : "S";
+			wsActions[i].addPropertyChangeListener((evt) -> {  // PRESSED LISTENERS
+				System.out.println(id.toLowerCase() + " pressed listener works");
+				timer.setId(id);
+				timer.start();	
+			});
+		}
+		// MAKE THE RELEASE LISTENERS CONCISE USING HASHMAP OF PRESS INDEX TO RELEASE INDEX
+		wsActions[2].addPropertyChangeListener((evt) -> {  // up release listener
+			System.out.println("W release listener works");
+			timer.stop();
+			wsActions[0].setBlocking(false);
+		});
+		
+		wsActions[3].addPropertyChangeListener((evt) -> {  // down release listener
+			System.out.println("S release listener works");
+			timer.stop();
+			wsActions[1].setBlocking(false);
 		});
 		
 		// THESE ARE STILL ACCESSIBLE WHEN PAUSED
