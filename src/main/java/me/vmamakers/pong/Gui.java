@@ -22,7 +22,7 @@ public class Gui {
 	private JFrame frame;
 	private GamePanel gamePanel;
 	private JLabel title, readyToPlay, pauseLabel, pauseInfo;
-	private FancyTimer timer;
+	private FancyTimer timer1, timer2;
 	
 	public static final int screenWidth = (int) Toolkit.getDefaultToolkit().getScreenSize().getWidth();
 	public static final int screenHeight = (int) Toolkit.getDefaultToolkit().getScreenSize().getHeight();
@@ -32,16 +32,27 @@ public class Gui {
 	}
 	
 	public void initGui() {
-		timer = new FancyTimer(5, (e) -> {
-			if (timer.getId().equals("UP") && gamePanel.getRightPaddle().getTransformedY() > gamePanel.getOffsetBorderThickness(5)) {
+		timer1 = new FancyTimer(5, (e) -> {
+			if (timer1.getId().equals("UP") && gamePanel.getRightPaddle().isCanMove() && gamePanel.getRightPaddle().getTransformedY() > gamePanel.getOffsetBorderThickness(5)) {
 				gamePanel.getRightPaddle().move(1);
 //				gamePanel.repaint();
-			} else if (timer.getId().equals("DOWN") && gamePanel.getRightPaddle().getTransformedY() < gamePanel.getHeight() - gamePanel.getOffsetBorderThickness(5) - gamePanel.getRightPaddle().getHeight()) {
+			} else if (timer1.getId().equals("DOWN") && gamePanel.getRightPaddle().isCanMove() && gamePanel.getRightPaddle().getTransformedY() < gamePanel.getHeight() - gamePanel.getOffsetBorderThickness(5) - gamePanel.getRightPaddle().getHeight()) {
 				gamePanel.getRightPaddle().move(-1);
 //				gamePanel.repaint();
-			} else if (timer.getId().equals("W") && gamePanel.getLeftPaddle().getTransformedY() > gamePanel.getOffsetBorderThickness(5)) {
+			} 
+//			else if (timer1.getId().equals("W") && gamePanel.getLeftPaddle().getTransformedY() > gamePanel.getOffsetBorderThickness(5)) {
+//				gamePanel.getLeftPaddle().move(1);
+//			} else if (timer1.getId().equals("S") && gamePanel.getLeftPaddle().getTransformedY() < gamePanel.getHeight() - gamePanel.getOffsetBorderThickness(5) - gamePanel.getLeftPaddle().getHeight()) {
+//				gamePanel.getLeftPaddle().move(-1);
+////				gamePanel.repaint();
+//			}
+			gamePanel.repaint();
+		});
+		
+		timer2 = new FancyTimer(5, (e) -> {
+			if (timer2.getId().equals("W") && gamePanel.getLeftPaddle().isCanMove() && gamePanel.getLeftPaddle().getTransformedY() > gamePanel.getOffsetBorderThickness(5)) {
 				gamePanel.getLeftPaddle().move(1);
-			} else if (timer.getId().equals("S") && gamePanel.getLeftPaddle().getTransformedY() < gamePanel.getHeight() - gamePanel.getOffsetBorderThickness(5) - gamePanel.getLeftPaddle().getHeight()) {
+			} else if (timer2.getId().equals("S") && gamePanel.getLeftPaddle().isCanMove() && gamePanel.getLeftPaddle().getTransformedY() < gamePanel.getHeight() - gamePanel.getOffsetBorderThickness(5) - gamePanel.getLeftPaddle().getHeight()) {
 				gamePanel.getLeftPaddle().move(-1);
 //				gamePanel.repaint();
 			}
@@ -148,11 +159,15 @@ public class Gui {
 				case "beginPause":
 					System.out.println("begin pause");
 					pauseLabel.setVisible(true);
+					gamePanel.getLeftPaddle().setCanMove(false);
+					gamePanel.getRightPaddle().setCanMove(false);
 	//				gamePanel.repaint();
 					break;
 				case "endPause":
 					System.out.println("end pause");
 					pauseLabel.setVisible(false);
+					gamePanel.getLeftPaddle().setCanMove(true);
+					gamePanel.getRightPaddle().setCanMove(true);
 	//				gamePanel.repaint();
 					break;
 				default:
@@ -176,20 +191,20 @@ public class Gui {
 			String id = (i == 0) ? "W" : "S";
 			wsActions[i].addPropertyChangeListener((evt) -> {  // PRESSED LISTENERS
 				System.out.println(id.toLowerCase() + " pressed listener works");
-				timer.setId(id);
-				timer.start();	
+				timer2.setId(id);
+				timer2.start();	
 			});
 		}
 		// MAKE THE RELEASE LISTENERS CONCISE USING HASHMAP OF PRESS INDEX TO RELEASE INDEX
 		wsActions[2].addPropertyChangeListener((evt) -> {  // up release listener
 			System.out.println("W release listener works");
-			timer.stop();
+			timer2.stop();
 			wsActions[0].setBlocking(false);
 		});
 		
 		wsActions[3].addPropertyChangeListener((evt) -> {  // down release listener
 			System.out.println("S release listener works");
-			timer.stop();
+			timer2.stop();
 			wsActions[1].setBlocking(false);
 		});
 		
@@ -203,20 +218,20 @@ public class Gui {
 			String id = (i == 0) ? "UP" : "DOWN";
 			arrowActions[i].addPropertyChangeListener((evt) -> {  // PRESSED LISTENERS
 				System.out.println(id.toLowerCase() + " pressed listener works");
-				timer.setId(id);
-				timer.start();	
+				timer1.setId(id);
+				timer1.start();	
 			});
 		}
 		
 		arrowActions[2].addPropertyChangeListener((evt) -> {  // up release listener
 			System.out.println("up release listener works");
-			timer.stop();
+			timer1.stop();
 			arrowActions[0].setBlocking(false);
 		});
 		
 		arrowActions[3].addPropertyChangeListener((evt) -> {  // down release listener
 			System.out.println("down release listener works");
-			timer.stop();
+			timer1.stop();
 			arrowActions[1].setBlocking(false);
 		});
 		
