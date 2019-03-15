@@ -5,7 +5,7 @@ import java.awt.event.ActionEvent;
 import lombok.Getter;
 import lombok.Setter;
 
-public class ArrowAction extends KeyAction {
+public class BlockingKeyAction extends KeyAction {
 
 	private static final long serialVersionUID = 2657249535618486846L;
 	
@@ -14,7 +14,7 @@ public class ArrowAction extends KeyAction {
 	@Getter @Setter private boolean isBlocking = false;
 	@Setter private FancyTimer timer;
 	
-	public ArrowAction(String id, boolean onRelease) {
+	public BlockingKeyAction(String id, boolean onRelease) {
 		super(id, onRelease);
 		this.id = id;
 		this.onRelease = onRelease;
